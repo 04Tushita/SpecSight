@@ -8,18 +8,25 @@ import { Button, Icon, Tag, Toasts, Swap, useEsc, Kbd, COL } from './ui.jsx';
 import { Player, stepsForCase } from './Recording.jsx';
 import { PRBody } from './Finish.jsx';
 
-const W = 1440;
-const H = 900;
+const BASE_W = 1440;
+const BASE_H = 900;
+let W = BASE_W;
+let H = BASE_H;
 
 function useScale() {
-  const calc = () => Math.min(window.innerWidth / W, window.innerHeight / H);
-  const [k, setK] = useState(calc);
+  const calc = () => {
+    const k = Math.min(1, window.innerWidth / BASE_W, window.innerHeight / BASE_H);
+    return { k, w: Math.round(window.innerWidth / k), h: Math.round(window.innerHeight / k) };
+  };
+  const [s, setS] = useState(calc);
   useEffect(() => {
-    const h = () => setK(calc());
+    const h = () => setS(calc());
     window.addEventListener('resize', h);
     return () => window.removeEventListener('resize', h);
   }, []);
-  return k;
+  W = s.w;
+  H = s.h;
+  return s.k;
 }
 
 function useNow() {
